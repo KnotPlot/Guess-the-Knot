@@ -1,0 +1,28 @@
+#!/opt/local/bin/php
+<?php
+
+date_default_timezone_set ('America/Vancouver');
+
+   
+function doit ($com) {
+  print "$com\n";
+  system ($com);
+}
+
+$long ['r'] = 'recto';
+$long ['v'] = 'verso';
+
+$fp = fopen ("manifest.csv", "w");
+foreach (glob ("????.tif") as $kells) {
+  list ($w, $h) = getimagesize ($kells);
+  $folio = basename ($kells, ".jpg");
+  $num = intval (substr ($folio, 0, 3));
+  $rv = $folio [3];
+  $folio = substr ($folio, 0, 3);
+  //fprintf ($fp, "%s,%s,%s\n", $kells, $num . $rv, $long [$rv]);
+  fprintf ($fp, "%s,%s,%d,%d\n", $kells, $num . $rv, $w, $h);
+}
+fclose ($fp);
+
+
+?>

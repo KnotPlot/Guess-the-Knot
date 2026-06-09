@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Knots in Art (2026-06-05 18:02:53 CEST)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<script type="importmap">
+                        {
+                                "imports": {
+                                        "three": "../three/build/three.module.js",
+                                        "three/addons/": "./jsm/"
+                                }
+                        }
+                </script>
+<style type="text/css">
+body {
+  overflow: hidden;
+  margin: 0;
+}
+.button-grid {
+  display: grid;
+  /* Creates 3 columns of equal width */
+  grid-template-columns: repeat(3, 1fr);
+  /* Adds 10px space between buttons */
+  gap: 10px;
+  z-index: 10; /* Ensures buttons stay on top */
+}
+#menu-layer {
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, "sans-serif";
+  color: white;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10; /* Ensures buttons stay on top */
+  gap: 10px;
+}
+#ui-layer {
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, "sans-serif";
+  color: white;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10; /* Ensures buttons stay on top */
+  gap: 10px;
+}
+.banner {
+  /* Position relative to the viewport */
+  position: fixed;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, "sans-serif";
+  /* Place the element's top edge at the top of the viewport */
+  top: 0;
+  color: white;
+  /* Place the element's left edge halfway across the viewport */
+  left: 50%;
+  /* Translate the element back by half of its own width */
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.0);
+  padding: 15px;
+  text-align: center;
+}
+.midsection {
+  position: fixed;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, "sans-serif";
+  /* Place the element's top edge at the top of the viewport */
+  color: white;
+  /* Place the element's left edge halfway across the viewport */
+  left: 50%;
+  /* Translate the element back by half of its own width */
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.0);
+  padding: 15px;
+  text-align: center;
+}
+.footer {
+  position: fixed;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, "sans-serif";
+  /* Place the element's top edge at the top of the viewport */
+  bottom: 0;
+  color: white;
+  /* Place the element's left edge halfway across the viewport */
+  left: 50%;
+  /* Translate the element back by half of its own width */
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.0);
+  padding: 15px;
+  text-align: center;
+}
+.overlay-menu-item {
+  padding-left: 2pt;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+  font-family: sans-serif;
+}
+.overlay-menu-item:hover {
+  background: white;
+}
+.overlay-button {
+  padding: 2px 4px;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: sans-serif;
+}
+.overlay-button:hover {
+  background: white;
+}
+.findout-button {
+id= padding: 2px 4px;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 20pt;
+  visibility:visible;
+}
+.findout-button:hover {
+  background: white;
+}
+.button-grid {
+  display: grid;
+  /* Creates 3 columns of equal width */
+  grid-template-columns: repeat(3, 1fr);
+  /* Adds 10px space between buttons */
+  gap: 10px;
+}
+/* Optional: Make buttons fill their grid cells */
+.button-grid button {
+  padding: 5px;
+  width: 100%;
+}
+.label {
+  padding-top: 7pt;
+  padding-bottom: 4pt;
+}
+</style>
+</head>
+<body>
+<script src="art.js" type="module"></script>
+<div id="container"> 
+  <!-- Three.js will inject the canvas here -->
+  
+  <div class="banner">Knots in Art<br>
+    <small>
+    <div id="subTitle">version</div>
+    </small> <br>
+    <div id="toplabel"> placeholder </div>
+  </div>
+  <div class="footer">
+    <div id="EphemeralMessage"> </div>
+    <br>
+    <br>
+    <br>
+    <div id="stuffatbottom">place holder</div>
+    <!--<button id="findout" class="findout-button">Find Out!</button>-->
+  </div>
+  <div id="menu-layer">
+    <button class="overlay-menu-item" onclick="window.location.href='./index.html';">Guess the Knot!</button>
+    <br>
+    <button class="overlay-menu-item" onclick="window.location.href='./relax.html';">relax</button>
+    <br>
+    <button class="overlay-menu-item" onclick="window.location.href='./art.html';">Knots in Art</button>
+    <br>
+    <button class="overlay-menu-item" onclick="window.location.href='./nature.html';">Knots in Nature</button> 
+  </div>
+  <div id="ui-layer"> 
+    <!--
+    <div class="label">scale:</div>
+    <div>
+      <button id="btn-sd" class="overlay-button">down</button>
+      <button id="btn-su" class="overlay-button">up</button>
+    </div>
+
+    <div class="label">show:</div>
+-->
+    <div class="button-grid">
+      <button id="btn-prev" class="overlay-button">prev</button>
+      <button id="btn-next" class="overlay-button">next</button>
+      <button id="btn-random" class="overlay-button">random</button>
+    </div>
+  </div>
+  <div> </div>
+</div>
+</body>
+</html>

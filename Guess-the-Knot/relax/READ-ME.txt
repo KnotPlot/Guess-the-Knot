@@ -1,0 +1,4 @@
+These are the KnotPlot knot files used used by relax.js
+
+--- rob scharein, 12 april 2026
+

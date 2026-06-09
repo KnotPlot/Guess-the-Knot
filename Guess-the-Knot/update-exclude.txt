@@ -1,0 +1,11 @@
+_notes
+_notes/* 
+*/_notes/* 
+mosaics/*
+.vite/*
+.git/*
+old/*
+relax/old/*
+art/notused/*
+textures/*
+*.tar*

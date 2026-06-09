@@ -1,0 +1,19 @@
+const MOLECULES = {
+  'Caffeine': 'caffeine.pdb',
+  'Ethanol': 'ethanol.pdb',
+  'Aspirin': 'aspirin.pdb',
+  'Nicotine': 'nicotine.pdb',
+  'Cocaine': 'cocaine.pdb',
+  'Cholesterol': 'cholesterol.pdb',
+  'Lycopene': 'lycopene.pdb',
+  'Glucose': 'glucose.pdb',
+  'Aluminium oxide': 'Al2O3.pdb',
+  'Cubane': 'cubane.pdb',
+  'Copper': 'cu.pdb',
+  'LSD': 'lsd.pdb',
+  'Fluorite': 'caf2.pdb',
+  'Salt': 'nacl.pdb',
+  'YBCO superconductor': 'ybco.pdb',
+  'Buckyball': 'buckyball.pdb',
+  'Graphite': 'graphite.pdb'
+}

@@ -1,0 +1,43 @@
+% cube
+% 6 tangle holders
+
+require KPbuild 4956
+
+line number 4
+line trim 0.2
+alloc comp 12
+alloc 48
+cyl-rad = 0.14
+show tholders
+new = f
+delete all
+tholder alloc 6
+
+% load "cube.wrl"
+
+line from 0.000000 0.000000 0.500000 to 0.500000 0.000000 0.000000
+line from 0.000000 0.000000 0.500000 to 0.000000 0.500000 0.000000
+line from 0.000000 0.000000 0.500000 to -0.500000 0.000000 0.000000
+line from 0.000000 0.000000 0.500000 to 0.000000 -0.500000 0.000000
+line from 0.500000 0.000000 0.000000 to 0.000000 0.500000 0.000000
+line from 0.500000 0.000000 0.000000 to 0.000000 -0.500000 0.000000
+line from 0.500000 0.000000 0.000000 to 0.000000 0.000000 -0.500000
+line from 0.000000 0.500000 0.000000 to -0.500000 0.000000 0.000000
+line from 0.000000 0.500000 0.000000 to 0.000000 0.000000 -0.500000
+line from -0.500000 0.000000 0.000000 to 0.000000 -0.500000 0.000000
+line from -0.500000 0.000000 0.000000 to 0.000000 0.000000 -0.500000
+line from 0.000000 -0.500000 0.000000 to 0.000000 0.000000 -0.500000
+%
+fitto avlength 1
+
+tholder f1 f2 f3 f0 
+tholder f5 f6 f4 l0 
+tholder l4 f8 f7 l1 
+tholder l7 f10 f9 l2 
+tholder l9 f11 l5 l3 
+tholder l11 l10 l8 l6 
+
+alias ~s "save cube.k"
+echo enter ~s to save tangle template
+name "cube"
+

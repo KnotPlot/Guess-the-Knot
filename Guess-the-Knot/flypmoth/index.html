@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Knots</title>
+        <style>
+html, body {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background: black;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+canvas {
+    width: min(100vw, 100vh) !important;
+    height: auto !important;
+}
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
+        <!--<script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.min.js"></script>-->
+        <!--<script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/addons/p5.sound.js"></script>-->
+        <!--<script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/addons/p5.sound.min.js"></script>-->
+    </head>
+    <body>
+        <script src="vectors.js"></script>
+        <script src="laurentPolynomial.js"></script>
+        <script src="multivariablePolynomial.js"></script>
+        <script type='application/javascript'>
+/**
+ * TODO:
+ * - Add feature for links (need to specify orientation)
+ * - Fox n-coloring generator 
+ */
+
+var voidFunc = function() {};
+var BigInt = (function() {
+    return this.BigInt;
+})() || voidFunc;
+var ZERO = BigInt("0");
+var ONE = BigInt("1");
+
+var PRESETS = {
+    "3_1": [[[70,270],[70,200],[280,200],[280,270],[230,320],[100,140],[175,100],[250,140],[120,320],[70,270]],{"1,4":false,"1,7":true,"4,7":false}], // trefoil
+    "4_1": [[[120,320],[70,170],[240,170],[240,340],[70,340],[120,190],[280,330],[280,180],[120,320]],{"0,4":false,"5,7":false,"2,7":true,"2,5":false}], // figure 8 knot
+    "5_1": [[[140,120],[220,120],[290,330],[230,380],[60,250],[70,180],[290,180],[300,250],[130,380],[70,330],[140,120]],{"5,9":false,"1,5":false,"1,7":true,"3,7":false,"3,9":true}],
+    //"5_2": [[[60,200],[130,130],[320,320],[270,370],[130,230],[60,300],[130,370],[320,180],[270,130],[130,270],[60,200]],{"4,9":true,"3,8":false,"1,8":true,"1,6":false,"3,6":true}],
+  
+  "lor":   [[[159,211],[146,246],[113,267],[73,264],[44,238],[38,199],[55,164],[91,147],[130,152],[159,178],[169,216],[155,252],[125,278],[87,286],[49,274],[22,245],[10,208],[17,169],[39,136],[72,115],[111,109],[150,118],[182,141],[207,173],[227,207],[247,241],[277,266],[316,266],[349,244],[361,207],[349,170],[318,145],[279,142],[244,160],[221,192],[221,231],[241,264],[275,285],[314,287],[350,270],[373,238],[380,199],[367,162],[338,134],[301,122],[262,127],[228,148],[204,180],[187,215],[169,251],[142,280],[106,295],[66,292],[32,273],[9,241],[0,202],[8,163],[31,130],[63,108],[102,99],[141,104],[176,123],[204,152],[225,185],[245,220],[270,250],[308,259],[341,238],[350,200],[332,166],[296,151],[258,161],[233,191],[230,229],[252,261],[287,278],[326,273],[357,248],[370,211],[362,173],[335,143],[298,131],[259,139],[228,163],[209,198],[212,237],[232,271],[263,295],[302,303],[341,295],[373,272],[393,238],[400,199],[390,160],[367,128],[334,106],[296,97],[256,102],[221,120],[193,148],[172,182],[152,216],[128,248],[91,257],[58,237],[49,200],[70,167],[108,158],[143,175],[159,211]],{"9,100":true,"22,99":true,"23,34":true,"23,46":true,"23,83":true,"24,72":true,"33,63":false,"46,62":false,"61,98":true,"62,83":true,"63,72":true,"100,108":false}]
+
+,
+  
+  "monster": [[[360,128],[337,105],[314,81],[276,69],[238,58],[206,66],[177,76],[171,103],[174,128],[207,149],[234,146],[252,112],[244,80],[220,48],[185,35],[146,30],[119,43],[94,62],[90,92],[92,124],[116,150],[146,175],[185,183],[224,189],[263,194],[301,199],[337,213],[372,228],[386,251],[397,276],[374,290],[348,304],[309,297],[272,290],[250,275],[226,259],[194,237],[162,225],[131,236],[99,248],[65,261],[36,251],[12,222],[10,188],[21,152],[53,139],[92,134],[130,134],[167,136],[193,124],[218,110],[245,121],[269,136],[265,175],[255,211],[225,238],[199,262],[177,279],[155,287],[132,276],[109,257],[88,226],[67,215],[47,219],[37,245],[33,284],[53,314],[82,341],[118,355],[155,365],[188,366],[221,366],[253,351],[285,333],[304,301],[321,267],[336,234],[351,201],[356,165],[360,128]],{"4,12":true,"8,48":false,"10,51":true,"19,46":true,"23,53":true,"26,76":true,"32,74":false,"35,55":true,"38,60":false,"40,64":true}],
+  
+  "notmonster":  [[[360,128],[314,81],[239,57],[177,74],[167,124],[219,166],[247,108],[217,48],[147,26],[93,59],[88,120],[140,174],[218,189],[296,197],[369,224],[399,272],[358,303],[282,295],[236,266],[178,224],[120,237],[56,268],[5,219],[18,147],[91,132],[163,137],[217,109],[271,129],[265,201],[207,254],[164,290],[120,271],[79,213],[41,220],[31,292],[87,346],[161,367],[227,366],[290,331],[323,263],[352,198],[360,128]],{"2,6":false,"4,25":true,"5,26":true,"10,24":false,"12,27":false,"13,39":false,"16,38":true,"18,28":false,"20,31":true,"21,33":false}] ,
+  
+    //"6_2": [[[80,80],[160,80],[320,240],[260,300],[120,160],[50,160],[50,220],[120,220],[260,80],[320,140],[160,300],[80,300],[80,80]],{"1,7":false,"1,9":true,"3,7":true,"3,9":false,"4,11":false,"6,11":true}],
+    "6_3": [[[90,100],[290,100],[290,350],[90,350],[90,260],[250,140],[330,140],[330,260],[250,260],[130,140],[50,140],[50,310],[200,310],[90,200],[90,100]],{"9,13":true,"1,5":true,"1,7":false,"3,11":true,"4,8":true,"4,12":false}],
+  "goeritz": [[[393,158],[377,174],[365,191],[359,208],[361,226],[371,244],[386,262],[403,278],[419,294],[431,311],[437,331],[436,352],[428,373],[415,391],[399,408],[381,422],[361,434],[341,445],[319,454],[297,461],[275,465],[251,467],[226,465],[203,457],[184,443],[177,425],[185,407],[205,389],[224,371],[231,354],[225,338],[209,324],[187,313],[164,306],[142,301],[120,296],[97,291],[75,285],[54,278],[33,269],[12,257],[-7,243],[-20,228],[-26,212],[-23,196],[-11,182],[6,168],[27,156],[48,146],[68,138],[84,131],[99,127],[114,126],[132,126],[154,127],[178,125],[200,119],[217,108],[223,93],[216,76],[197,58],[179,40],[175,20],[189,1],[208,-20],[215,-41],[206,-60],[186,-73],[161,-77],[137,-74],[114,-67],[93,-57],[74,-45],[54,-33],[36,-20],[17,-6],[0,10],[-15,27],[-28,46],[-36,67],[-37,89],[-31,110],[-19,128],[-3,144],[14,161],[29,178],[38,196],[41,213],[36,231],[24,249],[8,266],[-10,281],[-26,297],[-37,315],[-42,335],[-39,357],[-30,377],[-15,395],[2,410],[21,424],[40,435],[61,446],[82,455],[103,462],[125,468],[148,471],[173,470],[197,463],[216,448],[225,429],[220,409],[202,389],[184,369],[179,350],[187,331],[204,316],[226,304],[249,297],[269,293],[288,289],[306,285],[325,280],[346,273],[368,264],[390,253],[408,240],[421,225],[425,209],[421,193],[409,178],[391,164],[371,151],[353,142],[337,134],[319,127],[297,120],[279,118],[262,122],[242,126],[218,128],[196,123],[179,112],[171,96],[176,78],[194,59],[213,40],[220,22],[207,4],[185,-14],[171,-31],[173,-48],[189,-62],[212,-69],[237,-70],[261,-66],[283,-59],[305,-51],[325,-41],[346,-30],[366,-19],[385,-6],[403,8],[420,25],[433,43],[442,64],[444,86],[438,107],[427,125],[411,142],[393,158]],{"0,130":false,"5,123":true,"22,107":false,"26,110":true,"31,114":false,"39,89":false,"46,84":true,"55,140":false,"60,144":true,"63,147":false,"66,151":true}],
+    
+    "nta": [[[266,161],[251,182],[237,202],[226,222],[220,247],[223,273],[236,294],[255,308],[277,317],[303,321],[328,319],[351,312],[370,301],[385,286],[396,267],[399,244],[395,220],[382,197],[364,181],[342,173],[316,172],[286,172],[260,165],[238,153],[215,138],[195,122],[188,104],[197,84],[215,67],[238,56],[262,51],[285,51],[309,57],[331,66],[350,80],[366,97],[378,117],[384,140],[385,164],[380,188],[370,209],[359,226],[347,237],[327,246],[299,249],[276,250],[266,250],[257,252],[239,255],[216,258],[192,258],[171,250],[157,236],[147,221],[134,207],[113,198],[88,192],[68,180],[59,162],[61,140],[73,118],[89,100],[107,86],[124,76],[143,68],[164,65],[189,66],[213,75],[229,92],[231,112],[218,134],[201,154],[189,171],[181,187],[172,204],[158,224],[140,241],[120,250],[105,248],[96,235],[95,213],[102,187],[109,164],[106,147],[91,136],[70,130],[45,133],[24,143],[8,160],[1,182],[1,205],[6,228],[15,250],[27,270],[42,289],[60,305],[80,318],[102,329],[124,337],[147,343],[171,347],[194,349],[217,348],[240,342],[263,332],[282,317],[297,300],[307,279],[310,253],[307,224],[304,205],[304,183],[304,154],[299,134],[291,130],[279,141],[266,161]],{"0,21":true,"4,48":false,"8,104":true,"17,39":false,"20,111":true,"24,70":false,"27,66":true,"43,108":false,"52,75":true,"55,80":false,"59,85":true}],
+    //"pest": [[[347,175],[301,103],[213,89],[132,105],[65,163],[59,248],[129,297],[187,232],[239,157],[247,76],[183,32],[151,108],[191,170],[262,221],[273,296],[214,360],[139,343],[108,260],[162,251],[235,285],[315,257],[347,175]],{"1,8":false,"2,10":true,"5,16":false,"6,18":true,"7,12":false,"13,19":false}],
+    "8_2":[[[47,193],[32,258],[73,308],[148,320],[202,318],[266,327],[339,311],[367,255],[339,186],[302,123],[295,51],[253,15],[197,61],[163,84],[94,68],[54,95],[95,151],[151,185],[209,229],[251,279],[241,350],[183,380],[138,327],[149,260],[202,212],[260,181],[323,154],[358,104],[305,77],[241,63],[178,25],[121,67],[94,132],[47,193]],{"2,22":true,"4,19":false,"8,25":true,"9,28":false,"11,29":true,"13,31":false,"15,32":true,"17,23":false}]
+};
+
+var getInteractives = function(JSON, Math, Map) {
+// this is indented back because there's lots of code here
+
+// can be used for knot input (development)
+var knotInput = PRESETS["3_1"]; //null;
+
+var COLORS = {
+    BLACK: color(0, 0, 0),
+    WHITE: color(255, 255, 255),
+    RED: color(255, 0, 0),
+    GREEN: color(0, 255, 0),
+    BLUE: color(0, 0, 255),
+    CYAN: color(0, 255, 255),
+    MAGENTA: color(255, 0, 255),
+    YELLOW: color(255, 255, 0)
+};
+
+var bracketNegative = function(x) { if (x>=0) { return ""+x; } return  "("+x+")"; };
+var println = function(x) { console.log(x); };
+
+/**
+ * Constructs a knot.
+ */
+var Knot = function(points, crossings) {
+    this.points = points || []; // array of [x, y]
+    this.acceptPoints = !(this.points.length >= 2 && this.points[0]+"" === this.points[this.points.length-1]+"");
+    // "i,j" -> true: i above j, false: j above i
+    this.crossings = crossings || {};
+    this.allCrossings = false;
+};
+Knot.EPSILON = 10;
+/**
+ * Adds a point to the knot.
+ * This is for drawing a knot with the GUI.
+ */
+Knot.prototype.addPoint = function(point) {
+    if (this.acceptPoints) {
+        if (this.points.length>=1 && Vectors.dist(point, this.points[0])<=Knot.EPSILON) {
+            this.points.push([this.points[0][0], this.points[0][1]]);
+            this.acceptPoints = false;
+        } else {
+            this.points.push(point);
+        }
+        return true;
+    }
+    return false;
+};
+/**
+ * Sets all crossings of a knot, if not all crossing have been set yet.
+ */
+Knot.prototype.ensureAllCrossings = function() {
+    if (this.allCrossings || this.acceptPoints) { return; }
+    this.allCrossings = true;
+    for (var i=0;i<this.points.length-1;i++) {
+        for (var j=i+2;j<this.points.length-1;j++) {
+            if (i === 0 && j === this.points.length-2) { continue; }
+            var pt = Vectors.intersectSegments(this.points[i], this.points[i+1], this.points[j], this.points[j+1]);
+            var crossName = i+","+j;
+            if (pt && typeof this.crossings[crossName] !== "boolean") {
+                this.crossings[crossName] = true;
+            }
+        }
+    }
+};
+/**
+ * Returns the planar diagram representation for a knot.
+ */
+Knot.prototype.planarDiagram = function() {
+    this.ensureAllCrossings();
+    var crossings = Object.keys(this.crossings);
+    crossings = crossings.concat(crossings.map(function(x) {
+        var sp = x.split(",");
+        return sp[1]+","+sp[0];
+    }));
+    var _this = this;
+    crossings.sort(function(a, b) {
+        var a0 = +a.split(",")[0];
+        var a1 = +a.split(",")[1];
+        var b0 = +b.split(",")[0];
+        var b1 = +b.split(",")[1];
+        if (a0 !== b0) { return a0-b0; }
+        var crossingA = Vectors.intersectSegments(_this.points[a0], _this.points[a0+1], _this.points[a1], _this.points[a1+1]);
+        var crossingB = Vectors.intersectSegments(_this.points[b0], _this.points[b0+1], _this.points[b1], _this.points[b1+1]);
+        return Vectors.dist(crossingA, _this.points[a0]) - Vectors.dist(crossingB, _this.points[b0]);
+    });
+    // handle crossings
+    var visitedCrossings = {};
+    var crossingNum = 0;
+    var pd = Object.keys(this.crossings).map(function() { return [-1, -1, -1, -1]; });
+    var edgeNum = 0;
+    crossings.forEach(function(i) {
+        var sp = i.split(",");
+        var a = +sp[0], b = +sp[1];
+        var revI = b+","+a;
+        if (a<b) {
+            if (_this.crossings[i]) {
+                if (_this.crossings[i] === (Vectors.cross(Vectors.sub(_this.points[b+1], _this.points[b]), Vectors.sub(_this.points[a], _this.points[b]))>0)) {
+                    pd[crossingNum][1] = edgeNum;
+                    pd[crossingNum][3] = (edgeNum+1)%crossings.length;
+                } else {
+                    pd[crossingNum][3] = edgeNum;
+                    pd[crossingNum][1] = (edgeNum+1)%crossings.length;
+                }
+            } else {
+                // start at edgeNum
+                pd[crossingNum][0] = edgeNum;
+                pd[crossingNum][2] = (edgeNum+1)%crossings.length;
+            }
+            visitedCrossings[i] = crossingNum;
+            crossingNum++;
+        } else {
+            if (_this.crossings[revI]) {
+                // start at edgeNum
+                pd[visitedCrossings[revI]][0] = edgeNum;
+                pd[visitedCrossings[revI]][2] = (edgeNum+1)%crossings.length;
+            } else {
+                if (_this.crossings[revI] === (Vectors.cross(Vectors.sub(_this.points[b+1], _this.points[b]), Vectors.sub(_this.points[a], _this.points[b]))>0)) {
+                    pd[visitedCrossings[revI]][3] = edgeNum;
+                    pd[visitedCrossings[revI]][1] = (edgeNum+1)%crossings.length;
+                } else {
+                    pd[visitedCrossings[revI]][1] = edgeNum;
+                    pd[visitedCrossings[revI]][3] = (edgeNum+1)%crossings.length;
+                }
+            }
+        }
+        edgeNum = (edgeNum+1)%crossings.length;
+    });
+    return pd;
+};
+/**
+ * Returns the extended Gauss code for a knot. Not used in other computations.
+ */
+Knot.prototype.extendedGaussCode = function() {
+    this.ensureAllCrossings();
+    var crossings = Object.keys(this.crossings);
+    crossings = crossings.concat(crossings.map(function(x) {
+        var sp = x.split(",");
+        return sp[1]+","+sp[0];
+    }));
+    var _this = this;
+    crossings.sort(function(a, b) {
+        var a0 = +a.split(",")[0];
+        var a1 = +a.split(",")[1];
+        var b0 = +b.split(",")[0];
+        var b1 = +b.split(",")[1];
+        if (a0 !== b0) { return a0-b0; }
+        return Vectors.dist(Vectors.intersectSegments(_this.points[a0], _this.points[a0+1], _this.points[a1], _this.points[a1+1]), _this.points[a0]) - Vectors.dist(Vectors.intersectSegments(_this.points[b0], _this.points[b0+1], _this.points[b1], _this.points[b1+1]), _this.points[b0]);
+    });
+    var visitIndex = {};
+    var visitNum = 1;
+    var result = [];
+    crossings.forEach(function(i) {
+        var sp = i.split(",");
+        var a = +sp[0], b = +sp[1];
+        var revI = b+","+a;
+        if (a<b) { // bug? this might not give orientation
+            visitIndex[i] = visitNum;
+            if (_this.crossings[i]) {
+                result.push(visitNum);
+            } else {
+                result.push(-visitNum);
+            }
+            visitNum++;
+        } else {
+            // I heard something about the "handedness" but really I have no idea
+            var sign = Vectors.cross(Vectors.sub(_this.points[b+1], _this.points[b]), Vectors.sub(_this.points[a], _this.points[b]));
+            if ((sign > 0) === _this.crossings[revI]) {
+                result.push(visitIndex[revI]);
+            } else {
+                result.push(-visitIndex[revI]);
+            }
+        }
+    });
+    return result;
+};
+/**
+ * Toggles the specified crossing (between over-crossing and under-crossing).
+ * Precondition: {lines} is 2 integers in a string "i,j", i<j.
+ */
+Knot.prototype.toggleCrossing = function(lines) {
+    this.crossings[lines] = !this.crossings[lines];
+};
+/**
+ * Finds all knot segments which are close to the cursor.
+ */
+Knot.prototype.nearCursor = function() {
+    var indices = [];
+    var mousePos = [mouseX, mouseY];
+    for (var i=0;i<this.points.length-1;i++) {
+        // check if near line from i to i+1
+        if (Vectors.distToLine(mousePos, this.points[i], this.points[i+1])<=Knot.EPSILON) {
+            indices.push(i);
+        }
+    }
+    return indices;
+};
+/**
+ * Finds all crossings which are close to the cursor.
+ */
+Knot.prototype.cursorCrossings = function() {
+    var indices = this.nearCursor();
+    var intersections = {};
+    var mousePos = [mouseX, mouseY];
+    for (var i=0;i<indices.length;i++) {
+        for (var j=i+1;j<indices.length;j++) {
+            if (indices[i]+1 === indices[j]) { continue; }
+            if (!this.acceptPoints && indices[i] === 0 && indices[j] === this.points.length-2) { continue; }
+            var pt = Vectors.intersectSegments(this.points[indices[i]], this.points[indices[i]+1], this.points[indices[j]], this.points[indices[j]+1]);
+            if (pt && Vectors.dist(pt, mousePos) <= Knot.EPSILON) {
+                intersections[indices[i]+","+indices[j]] = pt;
+            }
+        }
+    }
+    return intersections;
+};
+/**
+ * Reverses the orientation of the knot.
+ */
+Knot.prototype.flipOrientation = function() {
+    this.ensureAllCrossings();
+    this.points = this.points.toReversed();
+    var crossings = this.crossings;
+    this.crossings = {};
+    var n = this.points.length-2;
+    Object.keys(crossings).forEach(function(key) {
+        var sp = key.split(",");
+        var a = +sp[0], b = +sp[1];
+        // "x,y" becomes this.points.length-2-y,this.points.length-2-x
+        this.crossings[(n-b)+","+(n-a)] = !crossings[sp];
+    }, this);
+};
+/**
+ * Draws the knot.
+ */
+Knot.prototype.draw = function() {
+    stroke(COLORS.BLACK);
+    for (var i=0;i<this.points.length-1;i++) {
+        line(this.points[i][0], this.points[i][1], this.points[i+1][0], this.points[i+1][1]);
+    }
+    // draw crossings properly
+    Object.keys(this.crossings).forEach(function(key) {
+        var sp = key.split(",");
+        var a = +sp[0], b = +sp[1];
+        var pt = Vectors.intersectSegments(this.points[a], this.points[a+1], this.points[b], this.points[b+1]);
+        noStroke();
+        fill(COLORS.WHITE);
+        ellipse(pt[0], pt[1], 10, 10);
+        var vec, start, stop;
+        if (this.crossings[key]) {
+            vec = Vectors.unit(this.points[a], this.points[a+1]);
+            start = [pt[0]+vec[0]*5, pt[1]+vec[1]*5];
+            stop = [pt[0]-vec[0]*5, pt[1]-vec[1]*5];
+        } else {
+            vec = Vectors.unit(this.points[b], this.points[b+1]);
+            start = [pt[0]+vec[0]*5, pt[1]+vec[1]*5];
+            stop = [pt[0]-vec[0]*5, pt[1]-vec[1]*5];
+        }
+        stroke(COLORS.BLACK);
+        line(start[0], start[1], stop[0], stop[1]);
+    }, this);
+    // crossing near cursor
+    var intersections = this.cursorCrossings();
+    if (this.acceptPoints && this.points.length >= 1 &&
+        Vectors.dist(this.points[0], [mouseX, mouseY]) <= Knot.EPSILON) {
+        // draw startpoint
+        stroke(COLORS.BLACK);
+        noFill();
+        ellipse(this.points[0][0], this.points[0][1], 20, 20);
+    }
+    Object.values(intersections).forEach(function(pt) {
+        stroke(COLORS.BLACK);
+        noFill();
+        ellipse(pt[0], pt[1], 20, 20);
+    }, this);
+};
+/**
+ * Handles a mouse click on the knot.
+ */
+Knot.prototype.mouseClicked = function() {
+    var x = Math.round(mouseX);
+    var y = Math.round(mouseY);
+    var intersections = this.cursorCrossings();
+    var keys = Object.keys(intersections);
+    var numIntersections = keys.length;
+    if (numIntersections === 1) {
+        this.toggleCrossing(keys[0]);
+        return true;
+    } else if (numIntersections >= 2) {
+        return false;
+    }
+    return this.addPoint([x, y]);
+};
+
+/**
+ * Modifies pd to mark certain pairs of indexed segments as equal.
+ * 
+ * Returns the number of components.
+ */
+var relabel = function(pd, crossingOrientations, equal) {
+    equal = equal || [];
+    var visited = Array(pd.length*2+equal.length).fill(false);
+    var adjList = visited.map(function() { return []; });
+    var newComponents = 0;
+    var replacements = adjList.map(function(v, i) { return i; });
+    var getReplacement = function(v) {
+        if (replacements[v] === v) { return v; }
+        replacements[v] = getReplacement(replacements[v]);
+        return replacements[v];
+    };
+    // not sure
+    equal.forEach(function(pair) {
+        var i = pair[0], j = pair[1];
+        if (i === j) {
+            newComponents++; // not sure about this
+        } else {
+            replacements[getReplacement(i)] = getReplacement(j);
+        }
+    });
+    for (var i=0;i<replacements.length;i++) {
+        getReplacement(i);
+    }
+    var newLabels = adjList.map(function() {});
+    pd.forEach(function(v, idx) {
+        var i = replacements[v[0]],
+            j = replacements[v[1]],
+            k = replacements[v[2]],
+            l = replacements[v[3]];
+        // directly put in positions based on orientation
+        adjList[i][0] = k;
+        adjList[k][1] = i;
+        if (crossingOrientations[idx] === 1) {
+            adjList[j][1] = l;
+            adjList[l][0] = j;
+        } else {
+            adjList[j][0] = l;
+            adjList[l][1] = j;
+        }
+    });
+    // find cycle
+    var index = 0;
+    for (var i=0;i<adjList.length;i++) {
+        if (!visited[i] && adjList[i].length>0) {
+            visited[i] = true;
+            newLabels[i] = index;
+            index++;
+            var prev = i;
+            var current = adjList[i][0];
+            while (current !== i) {
+                newLabels[current] = index;
+                visited[current] = true;
+                index++;
+                if (adjList[current][0] === prev) {
+                    prev = current;
+                    current = adjList[current][1];
+                } else {
+                    prev = current;
+                    current = adjList[current][0];
+                }
+            }
+        }
+    }
+    // clean up
+    var nl = function(x) { return newLabels[replacements[x]]; };
+    for (var i=0;i<pd.length;i++) {
+        pd[i] = pd[i].map(nl);
+    }
+    return newComponents;
+};
+/**
+ * Returns an array that tells if the crossings of the planar diagram
+ * are over-crossings or under-crossings.
+ */
+var getOrientations = function(pd) {
+    var adjList = Array(pd.length*2).fill(0).map(function() { return []; });
+    var visited = adjList.map(function() { return false; });
+    var orient = pd.map(function() { return 1; });
+    const FORWARD = -2;
+    const REVERSE = -1;
+    for (var i=0;i<pd.length;i++) {
+        adjList[pd[i][0]].push([pd[i][2], FORWARD]);
+        adjList[pd[i][2]].push([pd[i][0], REVERSE]);
+        adjList[pd[i][1]].push([pd[i][3], i]);
+        adjList[pd[i][3]].push([pd[i][1], i]);
+    }
+    var visit = function(v, edge) {
+        visited[v] = true;
+        var prev = v;
+        var current = adjList[v][edge][0];
+        // if above strand and goes in
+        if (adjList[v][edge][1] >= 0 && v === pd[adjList[v][edge][1]][1]) {
+            // just says above or below
+            orient[adjList[v][edge][1]] = -1;
+        }
+        while (current !== v) {
+            visited[current] = true;
+            if (adjList[current][0][0] === prev) {
+                if (adjList[current][1][1] >= 0 && current === pd[adjList[current][1][1]][1]) {
+                    orient[adjList[current][1][1]] = -1;
+                }
+                prev = current;
+                current = adjList[current][1][0];
+            } else {
+                if (adjList[current][0][1] >= 0 && current === pd[adjList[current][0][1]][1]) {
+                    orient[adjList[current][0][1]] = -1;
+                }
+                prev = current;
+                current = adjList[current][0][0];
+            }
+        }
+    };
+    for (var i=0;i<adjList.length;i++) {
+        if (!visited[i] && adjList[i].length>0) {
+            if (adjList[i][0][1] === FORWARD || adjList[i][1][1] === REVERSE) {
+                visit(i, 0);
+            } else if (adjList[i][1][1] === FORWARD || adjList[i][0][1] === REVERSE) {
+                visit(i, 1);
+            }
+        }
+    }
+    for (var i=0;i<adjList.length;i++) {
+        if (!visited[i] && adjList[i].length>0) {
+            visit(i, 0);
+        }
+    }
+    return orient;
+};
+/**
+ * Counts the crossings to help check if the knot is unknotted.
+ */
+var crossingCount = function(pd) {
+    var underCount = 0, overCount = 0;
+    pd.forEach(function(v) {
+        var a = v[0], b = v[1], c = v[2], d = v[3];
+        if (a < Math.max(b, d)) {
+            underCount++;
+        } else {
+            overCount++;
+        }
+    });
+    return [overCount, underCount];
+};
+
+/**
+ * Returns an array of numbers describing the connected components of the graph given by an adjacency list.
+ * array[i] is the index of the connected component ranging from 0 to (number of connected components - 1).
+ */
+var connectedComponents = function(adjList) {
+    var visited = Array(adjList.length).fill(-1);
+    var dfs = function(v, c) {
+        if (visited[v] !== -1) {
+            return;
+        }
+        visited[v] = c;
+        for (var i=0;i<adjList[v].length;i++) {
+            dfs(adjList[v][i], c);
+        }
+    };
+    var component = 0;
+    for (var i=0;i<adjList.length;i++) {
+        if (visited[i] === -1) {
+            dfs(i, component);
+            component++;
+        }
+    }
+    return visited;
+};
+
+/**
+ * Returns a string representation of a polynomial. Assumes leading zeros are removed.
+ */
+var asPolynomial = function(p) {
+    if (p.length === 0) {
+        return 0;
+    }
+    var result = [];
+    var asciiResult = [];
+    var superscript = function(x) { return "\u2070\u00B9\u00B2\u00B3\u2074\u2075\u2076\u2077\u2078\u2079"[x]; };
+    for (var i=p.length-1;i>=0;i--) {
+        var str = ""+p[i];
+        var asciiStr = str;
+        if (str !== "0") {
+            if (i === 1) {
+                str += "t";
+                asciiStr += "t";
+            } else if (i > 1) {
+                str += "t" + (""+i).split("").map(superscript).join("");
+                asciiStr += "t^"+i;
+            }
+            if (str[0] !== "-" && i<p.length-1) {
+                str = "+"+str;
+                asciiStr = "+"+asciiStr;
+            }
+        }
+        result.push(str);
+        asciiResult.push(asciiStr);
+    }
+    return result.join("")+"\n"+asciiResult.join("");
+};
+/**
+ * Returns [gcd, x, y] such that a*x + b*y = gcd. Uses BigInt.
+ */
+var extendedEuclid = function(a, b) {
+    // a in terms of original a
+    var aa = ONE, ab = ZERO, ba = ZERO, bb = ONE;
+    if (a < 0) {
+        a = -a;
+        aa = -aa;
+    }
+    if (b < 0) {
+        b = -b;
+        bb = -bb;
+    }
+    while (a !== ZERO) {
+        var q = b/a;
+        ba -= aa*q;
+        bb -= ab*q;
+        b %= a;
+        if (b === ZERO) {
+            return [a, aa, ab];
+        }
+        q = a/b;
+        aa -= ba*q;
+        ab -= bb*q;
+        a %= b;
+    }
+    return [b, ba, bb];
+};
+/**
+ * Returns a 2x2 integer matrix of determinant 1 [[w, x], [y, z]] such that
+ * [w x][a] equals [gcd]
+ * [y z][b]        [ 0 ]
+ */
+var getRotationMatToGcd = function(a, b) {
+    var coeffs = extendedEuclid(a, b);
+    return [[coeffs[1], coeffs[2]], [-b/coeffs[0], a/coeffs[0]]];
+};
+/**
+ * Calculates determinant of integer polynomial matrix. Modifies the matrix while computing.
+ */
+var calculateDeterminant = function(matrix, degreeHint) {
+    var ZERO = BigInt("0");
+    var ONE = BigInt("1");
+    var n = matrix.length;
+    if (degreeHint === undefined) {
+        // take sum of largest degree in each row
+        var degreeHint = 0;
+        for (var i=0;i<n;i++) {
+            var maxDeg = 0;
+            for (var j=0;j<n;j++) {
+                maxDeg = Math.max(maxDeg, matrix[i][j].length-1);
+            }
+            degreeHint += maxDeg;
+        }
+    }
+    for (var i=0;i<n;i++) {
+        for (var j=0;j<n;j++) {
+            for (var k=0;k<matrix[i][j].length;k++) {
+                matrix[i][j][k] = BigInt(matrix[i][j][k]);
+            }
+        }
+    }
+    var dets = [];
+    // evaluate at 0 to degreeHint
+    var evalMat = function(curPt) {
+        curPt = BigInt(curPt);
+        return Array(n).fill(0).map(function(_, i) {
+            return Array(n).fill(0).map(function(_, j) {
+                var sum = ZERO, d = matrix[i][j].length;
+                //while (d--) {
+                for (;d--;) {
+                    sum *= curPt;
+                    sum += matrix[i][j][d];
+                }
+                return BigInt(sum);
+            });
+        });
+    };
+    for (var curPt=0;curPt<=degreeHint;curPt++) {
+        var curMat = evalMat(curPt);
+        var det = ONE; // determinant
+        for (var i=0;i<n;i++) {
+            // get nonzero integer
+            var swapRow = -1;
+            for (var j=i;j<n;j++) {
+                if (curMat[j][i] !== ZERO) {
+                    swapRow = j;
+                    break;
+                }
+            }
+            if (swapRow === -1) {
+                det = ZERO;
+                break;
+            }
+            if (swapRow !== i) {
+                det = -det;
+                for (var j=i;j<n;j++) {
+                    var t = curMat[i][j];
+                    curMat[i][j] = curMat[swapRow][j];
+                    curMat[swapRow][j] = t;
+                }
+            }
+            // gcd
+            for (var j=i+1;j<n;j++) {
+                if (curMat[j][i] !== ZERO) {
+                    var rMat = getRotationMatToGcd(curMat[i][i], curMat[j][i]);
+                    for (var k=i;k<n;k++) {
+                        var t1 = curMat[i][k], t2 = curMat[j][k];
+                        curMat[i][k] = rMat[0][0]*t1 + rMat[0][1] * t2;
+                        curMat[j][k] = rMat[1][0]*t1 + rMat[1][1] * t2;
+                    }
+                }
+            }
+            det *= curMat[i][i];
+        }
+        dets.push(det);
+    }
+    // interpolating polynomial
+    // newton polynomial, divided differences
+    for (var i=1;i<=degreeHint;i++) {
+        for (var j=degreeHint;j>=i;j--) {
+            // assert: this should be an integer
+            if ((dets[j]-dets[j-1])%BigInt(i) !== ZERO) {
+                println("Assertion failed, please send me your knot to help with debugging.");
+            }
+            dets[j] = (dets[j]-dets[j-1])/BigInt(i);
+        }
+    }
+    // dets[0]+dets[1]x+dets[2]x(x-1)+...
+    var poly = [dets[degreeHint]];
+    for (var i=degreeHint-1;i>=0;i--) {
+        var bigIntI = BigInt(i);
+        if (poly[poly.length-1] !== ZERO) {
+            // multiply by (x-i)
+            poly.push(poly[poly.length-1]);
+            for (var j=poly.length-2;j>0;j--) {
+                poly[j] = poly[j-1]-bigIntI*poly[j];
+            }
+            poly[0] *= -bigIntI;
+        }
+        poly[0] += dets[i];
+    }
+    while (poly.length && poly[poly.length-1] === ZERO) {
+        poly.pop();
+    }
+    return poly;
+};
+/**
+ * Calculates Alexander polynomial using determinants
+ * 
+ * This method is used:
+ * https://www.youtube.com/watch?v=dwz9GvJk49k&list=PLOROtRhtegr4c1H1JaWN1f6J_q1HdWZOY
+ */
+var alexanderPolynomial = function(pd) {
+    if (pd.length == 0) {
+        // unknot
+        return [ONE];
+    }
+    var crossingOrientations = getOrientations(pd);
+    var n = pd.length;
+    var coeffs = Array(n-1).fill(0).map(function() { return Array(n).fill(0).map(function() { return []; }); });
+    var adjList = Array(2*n).fill(0).map(function() { return []; });
+    // index the knot segments
+    for (var i=0;i<pd.length;i++) {
+        // join pd[i][1]pd[i][3]
+        adjList[pd[i][1]].push(pd[i][3]);
+        adjList[pd[i][3]].push(pd[i][1]);
+    }
+    // matrix is sparse, choose better representation?
+    var index = connectedComponents(adjList);
+    for (var i=0;i<coeffs.length;i++) {
+        // pd[i][1] gets 1-t
+        coeffs[i][index[pd[i][1]]] = [1, -1];
+        if (crossingOrientations[i] === 1) { // right handed
+            // pd[i][0] gets -1
+            coeffs[i][index[pd[i][0]]] = [-1];
+            // pd[i][2] gets t
+            coeffs[i][index[pd[i][2]]] = [0, 1];
+        } else { // left handed
+            // pd[i][0] gets t
+            coeffs[i][index[pd[i][0]]] = [0, 1];
+            // pd[i][2] gets -1
+            coeffs[i][index[pd[i][2]]] = [-1];
+        }
+        // remove one column
+        coeffs[i].pop();
+    }
+    // calculate det
+    var result = calculateDeterminant(coeffs, coeffs.length);
+    // normalise (pop left zeros, make leading coefficient positive)
+    var nonzeroIndex = result.findIndex(function(x) { return x !== ZERO; });
+    if (nonzeroIndex === -1) {
+        return [ZERO];
+    }
+    result = result.slice(nonzeroIndex);
+    // leading coeff positive
+    if (result[result.length-1]<0) {
+        for (var i=0;i<result.length;i++) {
+            result[i] = -result[i];
+        }
+    }
+    return result;
+};
+/**
+ * Counts the number of links given by a planar diagram.
+ */
+var countComponents = function(pd) {
+    var count = 0;
+    var index = [];
+    for (var i=0;i<pd.length*2;i++) {
+        index.push(i);
+    }
+    var findSet = function(v) {
+        if (index[v] === v) { return v; }
+        index[v] = findSet(index[v]);
+        return index[v];
+    };
+    pd.forEach(function(v) {
+        var a = v[0], b = v[1], c = v[2], d = v[3];
+        index[findSet(a)] = findSet(c);
+        index[findSet(b)] = findSet(d);
+    });
+    for (var i=0;i<index.length;i++) {
+        if (findSet(i) === i) {
+            count++;
+        }
+    }
+    return count;
+};
+/**
+ * Calculates using an arbitrary skein relation.
+ */
+var skeinRelation = function(pd, crossingOrientations, relation, baseCase, extraUnknot) {
+    crossingOrientations = crossingOrientations || getOrientations(pd);
+    var ccount = crossingCount(pd);
+    var overCount = ccount[0], underCount = ccount[1];
+    if (underCount === 0 || overCount === 0) {
+        //if (countComponents(pd) === 1) {
+            return baseCase(pd, crossingOrientations);
+        //}
+    } else if (underCount + overCount <= 1) {
+        return baseCase(pd, crossingOrientations);
+    }
+    // convert things
+    for (var i=0;i<pd.length;i++) {
+        if (pd[i][0] < Math.max(pd[i][1], pd[i][3]) && underCount < overCount || pd[i][0] >= Math.max(pd[i][1], pd[i][3]) && underCount >= overCount) {
+            var reducedPD = [];
+            for (var j=0;j<pd.length;j++) {
+                if (j !== i) {
+                    reducedPD.push(pd[j].slice());
+                }
+            }
+            var newOrientations = crossingOrientations.slice();
+            var reducedOrientations = crossingOrientations.slice();
+            reducedOrientations.splice(i, 1);
+            newOrientations[i] *= -1;
+            var extraComponents, newPD = [];
+            for (var j=0;j<pd.length;j++) {
+                newPD.push(pd[j].slice());
+            }
+            if (crossingOrientations[i] === -1) {
+                // negative crossing
+                extraComponents = relabel(reducedPD, reducedOrientations, [[pd[i][0], pd[i][3]], [pd[i][1], pd[i][2]]]);
+                newPD[i] = [pd[i][1], pd[i][2], pd[i][3], pd[i][0]];
+            } else {
+                // positive crossing
+                extraComponents = relabel(reducedPD, reducedOrientations, [[pd[i][0], pd[i][1]], [pd[i][2], pd[i][3]]]);
+                newPD[i] = [pd[i][3], pd[i][0], pd[i][1], pd[i][2]];
+            }
+            var newSkein = skeinRelation(newPD, newOrientations, relation, baseCase, extraUnknot);
+            var reducedSkein = extraUnknot.pow(extraComponents).getProduct(skeinRelation(reducedPD, reducedOrientations, relation, baseCase, extraUnknot));
+            if (crossingOrientations[i] === -1) {
+                var result = relation(newSkein, undefined, reducedSkein);
+                //println(JSON.stringify(pd));
+                //println(result);
+                return result;
+            } else {
+                var result = relation(undefined, newSkein, reducedSkein);
+                //println(JSON.stringify(pd));
+                //println(result);
+                return result;
+            }
+        }
+    }
+    println("Code should not reach here! [0]");
+};
+/**
+ * Calculates the Jones polynomial using the skein relation.
+ */
+var JonesPolynomial = function(pd) {
+    var LPlusFactor = new LaurentPolynomial([[-1, 1]]);
+    var LMinusFactor = new LaurentPolynomial([[1, -1]]);
+    var LZeroFactor = new LaurentPolynomial([[0.5, -1], [-0.5, 1]]);
+    var relation = function(LPlus, LMinus, LZero) {
+        if (!LPlus) {
+            return LMinusFactor.getProduct(LMinus).iadd(LZeroFactor.getProduct(LZero)).getProduct(LMinusFactor);
+        }
+        if (!LMinus) {
+            return LZeroFactor.getProduct(LZero).iadd(LPlusFactor.getProduct(LPlus)).getProduct(LPlusFactor);
+        }
+        if (!LZero) {
+            return LPlusFactor.getProduct(LPlus).iadd(LMinusFactor.getProduct(LMinus)).neg().truediv(LZeroFactor);
+        }
+    };
+    var baseCase = function(pd, crossingOrientations) {
+        var components = Math.max(1, countComponents(pd));
+        var ccount = crossingCount(pd);
+        var over = ccount[0], under = ccount[1];
+        if (over === 0 || under === 0) {
+            return new LaurentPolynomial([[0.5, -1], [-0.5, -1]]).pow(components-1);
+        }
+    };
+    return skeinRelation(pd, undefined, relation, baseCase, new LaurentPolynomial([[0.5, -1], [-0.5, -1]]));
+};
+/**
+ * Calculates the Alexander polynomial using the skein relation.
+ */
+var AlexanderPolynomialSkein = function(pd) {
+    var LPlusFactor = new LaurentPolynomial([[0, 1]]);
+    var LMinusFactor = new LaurentPolynomial([[0, -1]]);
+    var LZeroFactor = new LaurentPolynomial([[0.5, -1], [-0.5, 1]]);
+    var relation = function(LPlus, LMinus, LZero) {
+        if (!LPlus) {
+            return LMinusFactor.getProduct(LMinus).iadd(LZeroFactor.getProduct(LZero)).getProduct(LMinusFactor);
+        }
+        if (!LMinus) {
+            return LZeroFactor.getProduct(LZero).iadd(LPlusFactor.getProduct(LPlus)).getProduct(LPlusFactor);
+        }
+        if (!LZero) {
+            return LPlusFactor.getProduct(LPlus).iadd(LMinusFactor.getProduct(LMinus)).neg().truediv(LZeroFactor);
+        }
+    };
+    var baseCase = function(pd, crossingOrientations) {
+        var components = Math.max(1, countComponents(pd));
+        var ccount = crossingCount(pd);
+        var over = ccount[0], under = ccount[1];
+        if (over === 0 || under === 0) {
+            if (components === 1) {
+                return new LaurentPolynomial([[0, 1]]);
+            }
+            return new LaurentPolynomial([]);
+        }
+    };
+    return skeinRelation(pd, undefined, relation, baseCase, new LaurentPolynomial([]));
+};
+/**
+ * Calculates the HOMFLY polynomial using the skein relation.
+ */
+var HomflyPolynomialAZ = function(pd) {
+    var LPlusFactor = new MultivariablePolynomial([["1,0", 1]], ["a", "z"]);
+    var LMinusFactor = new MultivariablePolynomial([["-1,0", -1]], ["a", "z"]);
+    var LZeroFactor = new MultivariablePolynomial([["0,1", -1]], ["a", "z"]);
+    var relation = function(LPlus, LMinus, LZero) {
+        if (!LPlus) {
+            return LMinusFactor.getProduct(LMinus).iadd(LZeroFactor.getProduct(LZero)).getProduct(new MultivariablePolynomial([["-1,0", -1]], ["a", "z"]));
+        }
+        if (!LMinus) {
+            return LZeroFactor.getProduct(LZero).iadd(LPlusFactor.getProduct(LPlus)).getProduct(new MultivariablePolynomial([["1,0", 1]], ["a", "z"]));
+        }
+        if (!LZero) {
+            return LPlusFactor.getProduct(LPlus).iadd(LMinusFactor.getProduct(LMinus)).getProduct(new MultivariablePolynomial([["0,-1", 1]], ["a", "z"]));
+        }
+    };
+    var baseCase = function(pd, crossingOrientations) {
+        var components = Math.max(1, countComponents(pd));
+        var ccount = crossingCount(pd);
+        var over = ccount[0], under = ccount[1];
+        if (over === 0 || under === 0) {
+            return new MultivariablePolynomial([["1,-1", 1], ["-1,-1", -1]], ["a", "z"]).pow(components-1);
+        }
+    };
+    return skeinRelation(pd, undefined, relation, baseCase, new MultivariablePolynomial([["1,-1", 1], ["-1,-1", -1]], ["a", "z"]));
+    /*var LPlusFactor = new MultivariablePolynomial([["-1,0", 1]], ["a", "z"]);
+    var LMinusFactor = new MultivariablePolynomial([["1,0", -1]], ["a", "z"]);
+    var LZeroFactor = new MultivariablePolynomial([["0,1", -1]], ["a", "z"]);
+    var relation = function(LPlus, LMinus, LZero) {
+        if (!LPlus) {
+            return LMinusFactor.getProduct(LMinus).iadd(LZeroFactor.getProduct(LZero)).getProduct(new MultivariablePolynomial([["1,0", -1]], ["a", "z"]));
+        }
+        if (!LMinus) {
+            return LZeroFactor.getProduct(LZero).iadd(LPlusFactor.getProduct(LPlus)).getProduct(new MultivariablePolynomial([["-1,0", 1]], ["a", "z"]));
+        }
+        if (!LZero) {
+            return LPlusFactor.getProduct(LPlus).iadd(LMinusFactor.getProduct(LMinus)).getProduct(new MultivariablePolynomial([["0,-1", 1]], ["a", "z"]));
+        }
+    };
+    var baseCase = function(pd, crossingOrientations) {
+        var components = Math.max(1, countComponents(pd));
+        var ccount = crossingCount(pd);
+        var over = ccount[0], under = ccount[1];
+        if (over === 0 || under === 0) {
+            return new MultivariablePolynomial([["-1,-1", 1], ["1,-1", -1]], ["a", "z"]).pow(components-1);
+        }
+    };
+    return skeinRelation(pd, undefined, relation, baseCase, new MultivariablePolynomial([["-1,-1", 1], ["1,-1", -1]], ["a", "z"]));*/
+};
+/**
+ * Calculates the HOMFLY polynomial using the skein relation.
+ */
+var HomflyPolynomialLM = function(pd) {
+    var LPlusFactor = new MultivariablePolynomial([["1,0", 1]], ["l", "m"]);
+    var LMinusFactor = new MultivariablePolynomial([["-1,0", 1]], ["l", "m"]);
+    var LZeroFactor = new MultivariablePolynomial([["0,1", 1]], ["l", "m"]);
+    var relation = function(LPlus, LMinus, LZero) {
+        if (!LPlus) {
+            return LMinusFactor.getProduct(LMinus).iadd(LZeroFactor.getProduct(LZero)).getProduct(new MultivariablePolynomial([["-1,0", -1]], ["l", "m"]));
+        }
+        if (!LMinus) {
+            return LZeroFactor.getProduct(LZero).iadd(LPlusFactor.getProduct(LPlus)).getProduct(new MultivariablePolynomial([["1,0", -1]], ["l", "m"]));
+        }
+        if (!LZero) {
+            return LPlusFactor.getProduct(LPlus).iadd(LMinusFactor.getProduct(LMinus)).getProduct(new MultivariablePolynomial([["0,-1", -1]], ["l", "m"]));
+        }
+    };
+    var baseCase = function(pd, crossingOrientations) {
+        var components = Math.max(1, countComponents(pd));
+        var ccount = crossingCount(pd);
+        var over = ccount[0], under = ccount[1];
+        if (over === 0 || under === 0) {
+            return new MultivariablePolynomial([["1,-1", -1], ["-1,-1", -1]], ["l", "m"]).pow(components-1);
+        }
+    };
+    return skeinRelation(pd, undefined, relation, baseCase, new MultivariablePolynomial([["1,-1", -1], ["-1,-1", -1]], ["l", "m"]));
+};
+/**
+ * Constructs a button.
+ */
+var Button = function(config) {
+    this.x = config.x;
+    this.y = config.y;
+    this.w = config.w;
+    this.h = config.h;
+    this.onClick = config.onClick || function() {};
+    this.text = config.text;
+};
+/**
+ * Draws the button.
+ */
+Button.prototype.draw = function() {
+    if (this.mouseOver()) {
+        fill(127, 127, 127);
+    } else {
+        fill(255, 255, 255);
+    }
+    stroke(0, 0, 0);
+    strokeWeight(1);
+    rect(this.x, this.y, this.w, this.h);
+    fill(COLORS.BLACK);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    text(this.text, this.x, this.y, this.w, this.h);
+};
+/**
+ * Checks if the cursor is over the button.
+ */
+Button.prototype.mouseOver = function() {
+    return this.x<=mouseX && mouseX<=this.x+this.w && this.y<=mouseY && mouseY<=this.y+this.h;
+};
+/**
+ * Checks and handles what happens when the button is clicked.
+ */
+Button.prototype.mouseClicked = function() {
+    if (this.mouseOver()) {
+        this.onClick();
+        return true;
+    }
+    return false;
+};
+
+var knot = new Knot();
+if (knotInput) {
+    knot = new Knot(knotInput[0], knotInput[1]);
+}
+
+var SIDE_BUTTONS = [
+    /*["Extended Gauss Code", function() {
+            if (knot.acceptPoints) {
+                println("Invalid operation.");
+            } else {
+                println(knot.extendedGaussCode());
+            }
+    }],*/
+    ["Planar rgs Diagram", function() { 
+        if (knot.acceptPoints) {
+            println("Invalid operation.");
+        } else {
+            println(JSON.stringify(knot.planarDiagram()));
+        }
+    }],
+    ["Alexander Polynominal (det)", function() {
+        if (knot.acceptPoints) {
+            println("Invalid operation.");
+        } else {
+            var p = alexanderPolynomial(knot.planarDiagram());
+            println("Alexander Polynomial: ");
+            println(asPolynomial(p));
+        }
+    }],
+    ["Alexander Polynominal (skein)", function() {
+        if (knot.acceptPoints) {
+            println("Invalid operation.");
+        } else {
+            var p = AlexanderPolynomialSkein(knot.planarDiagram());
+            println("Alexander Polynomial: ");
+            println(p.toString());
+        }
+    }],
+    ["Jones Polynominal", function() {
+        if (knot.acceptPoints) {
+            println("Invalid operation.");
+        } else {
+            var p = JonesPolynomial(knot.planarDiagram());
+            println("Jones Polynomial: ");
+            println(p.toString());
+        }
+    }],
+    ["HOMFLY Polynominal (a, z)", function() {
+        if (knot.acceptPoints) {
+            println("Invalid operation.");
+        } else {
+          console.log ('rgs: ' + knot.planarDiagram ());
+            var p = HomflyPolynomialAZ(knot.planarDiagram());
+            println("HOMFLY Polynomial: ");
+            println(p.toString());
+        }
+    }],
+    ["HOMFLY Polynominal (l, m)", function() {
+        if (knot.acceptPoints) {
+            println("Invalid operation.");
+        } else {
+            var p = HomflyPolynomialLM(knot.planarDiagram());
+            println("HOMFLY Polynomial: ");
+            println(p.toString());
+        }
+    }],
+    ["Print Knot", function() {
+        println(JSON.stringify([knot.points, knot.crossings]));
+    }],
+    ["Clear Knot", function() {
+        knot = new Knot();
+    }],
+    /*["Flip Orientation", function() {
+        if (knot.acceptPoints) {
+            println("Invalid operation.");
+        } else {
+            knot.flipOrientation();
+            println("Flipped orientation.");
+        }
+    }],*/
+];
+
+var buttons = [];
+var buttonYPosition = 5;
+SIDE_BUTTONS.forEach(function(value) {
+    buttons.push(new Button({
+        x: 395, y: buttonYPosition, w: 200, h: 30,
+        onClick: value[1],
+        text: value[0]
+    }));
+    buttonYPosition += 35;
+});
+// add buttons for all the presets
+var presetXPosition = 10;
+Object.keys(PRESETS).forEach(function(key) {
+    buttons.push(new Button({
+        x: presetXPosition, y: 560, w: 50, h: 30,
+        onClick: function() {
+            knot = new Knot(PRESETS[key][0], PRESETS[key][1]);
+        },
+        text: key
+    }));
+    presetXPosition += 60;
+});
+
+var output = {};
+output.mouseClicked = function() {
+    for (var i=0;i<buttons.length;i++) {
+        if (buttons[i].mouseClicked()) {
+            return true;
+        }
+    }
+    if (knot.mouseClicked()) {
+        return true;
+    }
+    return false;
+};
+output.draw = function() {
+    background(255, 255, 255);
+    knot.draw();
+    fill(COLORS.BLACK);
+    noStroke();
+    if (knot.acceptPoints) {
+        text("Click to draw the knot!", 150, 10);
+    } else if (!knot.allCrossings) {
+        text("Click each intersection to define an over/under crossing!", 150, 10);
+    }
+    for (var i=0;i<buttons.length;i++) {
+        buttons[i].draw();
+    }
+};
+output.setKnot = function(knotInput) {
+    knot = new Knot(knotInput[0], knotInput[1]);
+};
+
+return output;
+};
+
+var setKnot;
+/**
+ * Sets up the program using the p5.js function.
+ */
+var setup = function() {
+    createCanvas(600, 600);
+    var interactives = getInteractives(JSON, Math, Map);
+    draw = interactives.draw;
+    mouseClicked = interactives.mouseClicked;
+    setKnot = interactives.setKnot; // input through console
+};
+        </script>
+    </body>
+</html>
+
