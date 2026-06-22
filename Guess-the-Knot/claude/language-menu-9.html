@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Language Menu</title>
+<style>
+  :root {
+    --bg: #0b0d10;
+    --panel: rgba(20, 23, 28, 0.92);
+    --border: #2a2f37;
+    --text: #e6e8eb;
+    --muted: #8b929c;
+    --accent: #5fd0ff;
+  }
+  html, body { margin: 0; height: 100%; background: var(--bg); }
+  #app { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+
+  /* --- Menu toggle button --- */
+  #menu-toggle {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  #menu-toggle:hover { border-color: var(--accent); }
+
+  /* --- Menu panel --- */
+  #menu {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 9;
+    width: 200px;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    backdrop-filter: blur(6px);
+    transform: translateX(-110%);
+    opacity: 0;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+    pointer-events: none;
+  }
+  #menu.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #menu h2 {
+    margin: 0 0 12px 56px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #161a1f;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .lang-option:last-child { margin-bottom: 0; }
+  .lang-option:hover { border-color: var(--accent); }
+  .lang-option.active {
+    border-color: var(--accent);
+    background: #11202a;
+  }
+  .lang-option .flag { font-size: 16px; }
+  .lang-option .check {
+    margin-left: auto;
+    color: var(--accent);
+    visibility: hidden;
+  }
+  .lang-option.active .check { visibility: visible; }
+
+  /* --- Just to show the selection took effect --- */
+  #display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text);
+    font: 28px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-align: center;
+  }
+  #display .sub {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <button id="menu-toggle" title="Toggle menu">☰</button>
+
+  <div id="menu">
+    <h2>Language</h2>
+
+    <button class="lang-option active" data-lang="en">
+      <span class="flag">🇬🇧</span>
+      <span>English</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="fr">
+      <span class="flag">🇫🇷</span>
+      <span>Français</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="pl">
+      <span class="flag">🇵🇱</span>
+      <span>Polski</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="es">
+      <span class="flag">🇪🇸</span>
+      <span>Español</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="it">
+      <span class="flag">🇮🇹</span>
+      <span>Italiano</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="sr">
+      <span class="flag">🇷🇸</span>
+      <span>Srpski</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="hi">
+      <span class="flag">🇮🇳</span>
+      <span>हिन्दी</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="uk">
+      <span class="flag">🇺🇦</span>
+      <span>Українська</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="de">
+      <span class="flag">🇩🇪</span>
+      <span>Deutsch</span>
+      <span class="check">✓</span>
+    </button>
+  </div>
+
+  <div id="display">
+    <div id="greeting">Hello!</div>
+    <div class="sub" id="code">en</div>
+  </div>
+</div>
+
+<script>
+  const greetings = {
+    en: 'Hello!',
+    fr: 'Bonjour !',
+    pl: 'Witaj!',
+    es: '¡Hola!',
+    it: 'Ciao!',
+    sr: 'Zdravo!',
+    hi: 'नमस्ते!',
+    uk: 'Привіт!',
+    de: 'Hallo!',
+  };
+
+  const menu = document.getElementById('menu');
+  const menuToggle = document.getElementById('menu-toggle');
+  const options = document.querySelectorAll('.lang-option');
+  const greetingEl = document.getElementById('greeting');
+  const codeEl = document.getElementById('code');
+
+  menuToggle.addEventListener('click', () => {
+    menu.classList.toggle('open');
+  });
+
+  options.forEach((option) => {
+    option.addEventListener('click', () => {
+      options.forEach((o) => o.classList.remove('active'));
+      option.classList.add('active');
+
+      const lang = option.dataset.lang;
+      greetingEl.textContent = greetings[lang];
+      codeEl.textContent = lang;
+
+      // Hook your own logic here, e.g.:
+      // setAppLanguage(lang);
+    });
+  });
+</script>
+</body>
+</html>

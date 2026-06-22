@@ -1,6 +1,6 @@
 import * as THREE from '../three/build/three.module.js';
 
-var gtkVersion = "2026-06-05 17:54:03 CEST";
+var gtkVersion = "2026-06-22 01:49:32 CEST";
 
 import {
   TrackballControls
@@ -76,7 +76,7 @@ var box, boxSize = 4.0;
 //console.clear();
 const currentDate = new Date();
 
-const options = {
+const options2 = {
   year: 'numeric',
   month: 'numeric',
   day: 'numeric',
@@ -87,11 +87,11 @@ const options = {
 };
 
 // Formats based on the user's default locale but forces a 24-hour cycle
-const formattedDateTime = currentDate.toLocaleString(undefined, options);
+const formattedDateTime = currentDate.toLocaleString(undefined, options2);
 
-console.log (formattedDateTime);
+console.log(formattedDateTime);
 
-function setBoxSize (size) {
+function setBoxSize(size) {
   box.scale.x = box.scale.y = box.scale.z = size;
 }
 
@@ -102,7 +102,6 @@ function createBox() {
     roughness: 1.0,
     metalness: 0.0
   });
-  
 
 
   var face = new THREE.Mesh(geometry, material);
@@ -125,15 +124,14 @@ var developer = false;
 
 var gamepadController = {
   isPL: false,
-  visible:true,
-  boxVisible: false,
+  visible: true,
+  floor: false,
   axes: false,
-  developer:false,
-  showOBJ:false
+  developer: false,
+  showOBJ: false
 };
 
-function setKnot(which) {
-}
+function setKnot(which) {}
 
 var currentModel = "monster";
 var movieName = "monster";
@@ -144,16 +142,16 @@ var guessSets = {
   monster: setKnot("monster"),
   compact: setKnot("compact"),
   PerkoPair: setKnot("perko_pair"),
-  Freedman:setKnot ('freeedman'),
+  Freedman: setKnot('freeedman'),
   ___knots___: setKnot("something"),
   monster1: setKnot("monster1"),
   monster2: setKnot("monster2"),
 
   relax: setKnot("ljfsd"),
-  
-    unknown: setKnot("unknown"),
 
-  unknown1: setKnot("unknown1"), 
+  unknown: setKnot("unknown"),
+
+  unknown1: setKnot("unknown1"),
   unknown2: setKnot("unknown2"),
 
   compact1: setKnot("compact1"),
@@ -178,47 +176,23 @@ var guessSets = {
   endlessRed: setKnot("endlessRed"),
   BorromeanRings: setKnot("BorromeanRings"),
   test1: setKnot("test1")
- 
-}
-
-
-var knots = {
-
-
-  monster1: setKnot("monster1"),
-  monster2: setKnot("monster2"),
-
-  unknown1: setKnot("unknown1"),
-  unknown2: setKnot("unknown2"),
-
-  compact1a: setKnot("compact1a"),
-  compact1b: setKnot("compact1b"),
-
-  PerkoA: setKnot("PerkoA"),
-  PerkoB: setKnot("PerkoB"),
-  Brunnian3: setKnot("Brunnian3"),
-  Brunnian4: setKnot("Brunnian4"),
-  LorenzLink: setKnot("LorenzLink"),
-  mosaic1: setKnot("mosaic1"),
-  mosaic2: setKnot("mosaic2"),
-  mosaic3: setKnot("mosaic3"),
-  test1: setKnot("test1")
 
 }
+
 
 var frame = 1;
 var OBJ_mesh;
 
-function add_OBJ_mesh (mesh) {
+function add_OBJ_mesh(mesh) {
   OBJ_mesh = mesh;
-  OBJ_mesh.scale.setScalar (0.1);
+  OBJ_mesh.scale.setScalar(0.1);
   OBJ_mesh.rotation.x = Math.PI / 2;
-  OBJ_mesh.castShadow = true;  
+  OBJ_mesh.castShadow = true;
   OBJ_mesh.visible = false;
-  scene.add (OBJ_mesh);
+  scene.add(OBJ_mesh);
 }
 
-function loadFrame () {
+function loadFrame() {
   //currentModel = "movies/monster/";
   currentModel = "movies/" + movieName + "/";
   if (frame < 10)
@@ -226,43 +200,43 @@ function loadFrame () {
   else if (frame < 100)
     currentModel += "0";
   currentModel += frame;
-  updateKPF ();
+  updateKPF();
 }
 
 let actionButton = {
-  nextFrame: function() {
+  nextFrame: function () {
     if (!movieReady) {
-      EphemeralMessage ("not available for " + movieName);
+      EphemeralMessage("not available for " + movieName);
       return;
     }
-    
+
     frame++;
     if (frame > 199)
       frame = 1;
-    loadFrame (); 
+    loadFrame();
   },
 
-  prevFrame: function() {
+  prevFrame: function () {
     if (!movieReady) {
-      EphemeralMessage ("not available for " + movieName);
+      EphemeralMessage("not available for " + movieName);
       return;
     }
-    
+
     frame--;
     if (frame < 1)
       frame = 199;
-    loadFrame ();
+    loadFrame();
   },
-  
-  testOBJ: function() {
+
+  testOBJ: function () {
     //gamepadController.showOBJ = true;
-    Utilities.loadOBJ ('./models/gumby.obj', add_OBJ_mesh);
+    Utilities.loadOBJ('./models/gumby.obj', add_OBJ_mesh);
   },
-  
+
   testLoader: function () {
     Utilities.test('questions.csv');
   }
-  
+
 };
 
 var trackballRotate = {
@@ -276,6 +250,10 @@ var params = {
   trackball: "scene"
   //currentLink: 'PerkoA'  
 };
+
+var langs = {
+
+}
 
 var shadowBox = {
 
@@ -310,11 +288,11 @@ function initGUI() {
     if (params.currentSet != "none") {
       currentModel = params.currentSet;
       movieName = currentModel;
-      console.log ('movieName is ' + movieName);  
+      console.log('movieName is ' + movieName);
       askQuestion(currentModel);
       updateKPF();
-      if (movieName == "monster" || movieName == "compact" || movieName == "PerkoPair" || movieName == 'Freedman') 
-        movieReady = true;  
+      if (movieName == "monster" || movieName == "compact" || movieName == "PerkoPair" || movieName == 'Freedman')
+        movieReady = true;
       else
         movieReady = false;
     }
@@ -322,48 +300,41 @@ function initGUI() {
   });
 
 
-  gui.add(gamepadController, "visible").onChange(function (value) {
-    knotGroup.visible = gamepadController.visible;
-    console.log ("knotGroup visible " + knotGroup.visibility);  
-  });
-
   gui.add(gamepadController, "isPL").onChange(function (value) {
     isPL = value;
     ModelLoader.setPL(isPL);
     updateKPF();
   });
 
-  var folderTrackball = gui.addFolder("Trackball");
-  folderTrackball.add(params, 'trackball', Object.keys(trackballRotate)).onChange(function () {
-    console.log("\n\setting trackball to " + params.trackball);
 
-  });
-
-
-  gui.add(gamepadController, "boxVisible").onChange(function (value) {
+  gui.add(gamepadController, "floor").onChange(function (value) {
     box.visible = !box.visible;
   });
 
   gui.add(gamepadController, "axes").onChange(function (value) {
     axesHelper.visible = !axesHelper.visible;
   });
-  gui.add (gamepadController, "developer").onChange(function (value) {
+  gui.add(gamepadController, "developer").onChange(function (value) {
     developer = value;
-    ModelLoader.setDeveloper (developer);
-    KnotPlotBinaryLoader.setDeveloper (developer);
-    Questions.setDeveloper (developer);
+    ModelLoader.setDeveloper(developer);
+    KnotPlotBinaryLoader.setDeveloper(developer);
+    Questions.setDeveloper(developer);
+    if (developer)
+      flypmoth_button.style.visibility = "visible";
+    else
+      flypmoth_button.style.visibility = "hidden";
   });
-        
-                                                 
-  
-  gui.add( actionButton, 'nextFrame').name( 'next frame' );
-  gui.add( actionButton, 'prevFrame').name( 'previous frame' );
+
+
+  gui.add(actionButton, 'nextFrame').name('next frame');
+  gui.add(actionButton, 'prevFrame').name('previous frame');
+  /*
   gui.add (actionButton, "testOBJ").name ('OBJ test');
   gui.add (actionButton, "testLoader").name ('loader test');
   gui.add(gamepadController, "showOBJ").onChange(function (value) {
     OBJ_mesh.visible = value;
   });
-                                                
+    */
 
 
   folderExamples.open();
@@ -481,12 +452,12 @@ function init() {
   var lightingCamera = false; // get this working!!
   mouse = new THREE.Vector2();
   timer = new THREE.Timer();
-  console.log ("Guess-the-Knot version\n" + gtkVersion);
+  console.log("Guess-the-Knot version\n" + gtkVersion);
 
   ModelLoader.version();
-  Utilities.version ();
-  KnotPlotBinaryLoader.version ();   
-  
+  Utilities.version();
+  KnotPlotBinaryLoader.version();
+
   trackball = new THREE.Group();
   knotGroup = new THREE.Group();
 
@@ -507,8 +478,8 @@ function init() {
   document.body.appendChild(container);
 
 
-  scene = new THREE.Scene();  
-  
+  scene = new THREE.Scene();
+
 
   scene.background = new THREE.Color(0x000022);
 
@@ -523,7 +494,6 @@ function init() {
   createBox(boxSize);
   scene.add(box);
   scene.add(knotGroup);
-
 
 
   if (!lightingCamera) {
@@ -544,7 +514,6 @@ function init() {
   container.appendChild(renderer.domElement);
 
   //document.body.appendChild (VRButton.createButton (renderer));
-
 
 
   var geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0),
@@ -662,10 +631,9 @@ function getIntersections(controller) {
   raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
   raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
- }
-
-function intersectObjects(controller) {
 }
+
+function intersectObjects(controller) {}
 
 function cleanIntersected() {
 
@@ -832,11 +800,11 @@ updateKPF();
 function render() {
 
   if (buttonXpressed) {
-    
+
 
   }
 
-  
+
   controls.update();
 
   checkGamepads();
@@ -848,154 +816,153 @@ function render() {
 
 }
 
-function addToConsole(message) {
-}
-
+function addToConsole(message) {}
 
 
 function ignore() {
 
 }
 
-const subTitle = document.getElementById ("subTitle");
+const subTitle = document.getElementById("subTitle");
 subTitle.innerHTML = gtkVersion;
 
-const EphemeralMessageText = document.getElementById ("EphemeralMessage");
+const EphemeralMessageText = document.getElementById("EphemeralMessage");
 EphemeralMessageText.style.visibility = "hidden";
 
-function hideEphemeralMessage () {
+function hideEphemeralMessage() {
   EphemeralMessageText.style.visibility = "hidden";
 }
 
-function EphemeralMessage (message) {
-  console.log (message);
+function EphemeralMessage(message) {
+  console.log(message);
   EphemeralMessageText.innerHTML = message;
   EphemeralMessageText.style.visibility = "visible";
-  setTimeout (hideEphemeralMessage, 3000);
+  setTimeout(hideEphemeralMessage, 3000);
 }
 
 var intervalID;
 var moviePlaying = false;
 
-var masterClock = new THREE.Clock ();
+var masterClock = new THREE.Clock();
 
-function playMovie () {
+function playMovie() {
   frame = 1
   var numFramesShown = 0;
   var frameStep = 5;
   moviePlaying = true;
 
   masterClock.getDelta();
-  
+
   intervalID = setInterval(() => {
     if (frame < 200) {
       numFramesShown++;
-      loadFrame ();
-    }
-    else {
-      clearInterval (intervalID);
+      loadFrame();
+    } else {
+      clearInterval(intervalID);
       moviePlaying = false;
-      console.log ("showed " + numFramesShown + " frames in " + masterClock.getDelta().toFixed (1) + 's');
+      console.log("showed " + numFramesShown + " frames in " + masterClock.getDelta().toFixed(1) + 's');
     }
-    
+
     //console.log ("frame " + frame);
     frame += frameStep;
   }, 30 * frameStep);
 }
 
 
-function playMovieNew () {
+function playMovieNew() {
   frame = 1
   var numFramesShown = 0;
   //var frameStep = 5;
   moviePlaying = true;
 
   masterClock.getDelta();
-  
+
   intervalID = setInterval(() => {
     if (frame <= 40) {
       numFramesShown++;
-      loadFrame ();
-    }
-    else {
-      clearInterval (intervalID);
+      loadFrame();
+    } else {
+      clearInterval(intervalID);
       moviePlaying = false;
-      console.log ("showed " + numFramesShown + " frames in " + masterClock.getDelta().toFixed (1) + 's');
+      console.log("showed " + numFramesShown + " frames in " + masterClock.getDelta().toFixed(1) + 's');
     }
-    
+
     //console.log ("frame " + frame);
     frame++;
   }, 150);
 }
 
 
-const findoutButton = document.getElementById ("findout");
-findoutButton.addEventListener ('click', () => {
-  
-  if (movieReady) { 
+//const gtk_banner = document.getElementById ('gtk_banner');
+
+const findoutButton = document.getElementById("findout");
+findoutButton.addEventListener('click', () => {
+
+  if (movieReady) {
     if (moviePlaying) {
-      EphemeralMessage ("currently finding out!");
+      EphemeralMessage("currently finding out!");
       return;
     }
-    EphemeralMessage ("here we go!"); 
-    playMovie (); 
-  }
-  else {
-    EphemeralMessage ("not working yet for " + movieName);
+    EphemeralMessage("here we go!");
+    playMovie();
+  } else {
+    EphemeralMessage("not working yet for " + movieName);
   }
 
 });
 
 
 var question = "";
-var question_div = document.getElementById ("question");
+var question_div = document.getElementById("question");
 
 function askCallback(group) {
   //movableObjects.add(group);
-  
-  var lines = question.split ('|');
+
+  var lines = question.split('|');
 
   var html = "";
   var visibility = false;
-  
-  lines.forEach (function (line) {
+
+  lines.forEach(function (line) {
     html += line + "<br>";
-    if (line.includes ("?"))
+    if (line.includes("?"))
       visibility = true;
   });
-   question_div.innerHTML = html;
+  question_div.innerHTML = html;
   if (visibility)
     findoutButton.style.visibility = "visible";
   else
     findoutButton.style.visibility = "hidden";
 }
 
+var language = 'en';
+
 Questions.load(function () {
   askQuestion(currentModel);
-});
+}, language);
 
 function askQuestion(q) {
 
   question = Questions.getQuestion(q.toLowerCase());
-  askCallback ();
+  askCallback();
   render();
-  
-  
+
+
 }
 
 const btpx = document.getElementById('btn-px');
 
 btpx.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-1 clicked');
-  aboutX (THREE.MathUtils.degToRad(90 / 4));
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-1 clicked');
+  aboutX(THREE.MathUtils.degToRad(90 / 4));
 })
 
 const btpy = document.getElementById('btn-py');
 
 btpy.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-2 clicked');
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-2 clicked');
   aboutY(THREE.MathUtils.degToRad(90 / 4));
 })
 
@@ -1003,32 +970,32 @@ btpy.addEventListener('click', () => {
 const btpz = document.getElementById('btn-pz');
 
 btpz.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-2 clicked');
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-2 clicked');
   aboutZ(THREE.MathUtils.degToRad(90 / 4));
 })
 
 const btmx = document.getElementById('btn-mx');
 
 btmx.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-1 clicked');
-  aboutX (THREE.MathUtils.degToRad(-90 / 4));
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-1 clicked');
+  aboutX(THREE.MathUtils.degToRad(-90 / 4));
 })
 
 const btmy = document.getElementById('btn-my');
 
 btmy.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-2 clicked');
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-2 clicked');
   aboutY(THREE.MathUtils.degToRad(-90 / 4));
 })
 
 const btmz = document.getElementById('btn-mz');
 
 btmz.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-2 clicked');
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-2 clicked');
   aboutZ(THREE.MathUtils.degToRad(-90 / 4));
 })
 
@@ -1036,21 +1003,90 @@ btmz.addEventListener('click', () => {
 const btsd = document.getElementById('btn-sd');
 
 btsd.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-2 clicked');
-  scaleKnotGroup(1/1.04);
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-2 clicked');
+  scaleKnotGroup(1 / 1.04);
 })
 
 
 const btsu = document.getElementById('btn-su');
 
 btsu.addEventListener('click', () => {
-    // Example: Rotate a cube in your Three.js scene
-    //console.log ('btn-2 clicked');
+  // Example: Rotate a cube in your Three.js scene
+  //console.log ('btn-2 clicked');
   scaleKnotGroup(1.04);
 })
 
-EphemeralMessage ("use the buttons in the lower left to rotate or scale the knot");
-console.log ("\n\n\n*************************** THREE.REVISION is:" + THREE.REVISION);
+const flypmoth_button = document.getElementById('flypmoth');
+flypmoth_button.style.visibility = "hidden";
+
+//EphemeralMessage("use the buttons in the lower left to rotate or scale the knot");
+console.log("\n\n\n*************************** THREE.REVISION is:" + THREE.REVISION);
 
 
+const greetings = {
+  en: 'use the buttons in the lower right to scale or rotate the knot',
+  fr: 'utilisez les boutons en bas à droite pour redimensionner ou faire pivoter le nœud',
+  pl: 'użyj przycisków w prawym dolnym rogu, aby skalować lub obracać węzeł',
+  es: 'utilice los botones de la parte inferior derecha para escalar o rotar el nudo',
+  it: 'utilizzare i pulsanti in basso a destra per ridimensionare o ruotare il nodo',
+  sr: 'kористите дугмад у доњем десном углу да бисте скалирали или ротирали чвор',
+  hi: 'गाँठ को बड़ा या घुमाने के लिए नीचे दाएं कोने में दिए गए बटनों का उपयोग करें।',
+  uk: 'використовуйте кнопки внизу праворуч, щоб масштабувати або повертати вузол',
+  de: 'verwenden Sie die Schaltflächen unten rechts, um den Knoten zu skalieren oder zu drehen',
+};
+
+const find_out_text = {
+  en: 'find out',
+  fr: 'découvrir',
+  pl: 'dowiadywać się',
+  es: 'descubrir',
+  it: 'scoprire',
+  sr: 'сазнати',
+  hi: 'पता लगाना',
+  uk: 'дізнатися',
+  de: 'finde es heraus',  
+}
+
+const gtk_banner_text = {
+  en: 'Guess the Knot',
+  fr: 'découvrir',
+  pl: 'dowiadywać się',
+  es: 'descubrir',
+  it: 'scoprire',
+  sr: 'сазнати',
+  hi: 'पता लगाना',
+  uk: 'дізнатися',
+  de: 'finde es heraus',    
+}
+
+const menu = document.getElementById('menu');
+const menuToggle = document.getElementById('menu-toggle');
+const options = document.querySelectorAll('.lang-option');
+const greetingEl = document.getElementById('greeting');
+const codeEl = document.getElementById('code');
+const findout_button = document.getElementById ('findout');
+const gtk_banner = document.getElementById ('gtk_banner');
+
+menuToggle.addEventListener('click', () => {
+  menu.classList.toggle('open');
+});
+
+options.forEach((option) => {
+  option.addEventListener('click', () => {
+    options.forEach((o) => o.classList.remove('active'));
+    option.classList.add('active');
+
+    language = option.dataset.lang;
+    EphemeralMessage(greetings[language]);
+    //codeEl.textContent = lang;
+    console.log('setting to language ' + language);
+    findout_button.innerHTML = find_out_text [language] + '!';
+    //gtk_banner.innerHTML = gtk_banner_text [language] + '!';  doesn't work for some reason!!
+    
+    Questions.load(function () {
+      askQuestion(currentModel);
+    }, language);
+    //findoutButton.style.visibility = "visible";
+  });
+});

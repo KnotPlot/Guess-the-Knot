@@ -7,7 +7,7 @@ import {
 } from "./Utilities.js";
 
 
-var artVersion = "2026-06-05 18:02:53 CEST";
+var artVersion = "2026-06-22 02:05:00 CEST";
 var currentImage = 0;
 const imageMap = new Map();
 var imageArray = new Array();

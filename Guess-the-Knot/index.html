@@ -13,6 +13,99 @@
                         }
                 </script>
 <style type="text/css">
+ :root {
+    --bg: #0b0d10;
+    --panel: rgba(20, 23, 28, 0.92);
+    --border: #2a2f37;
+    --text: #e6e8eb;
+    --muted: #8b929c;
+    --accent: #5fd0ff;
+  }
+/* --- Menu toggle button --- */
+  #menu-toggle {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  #menu-toggle:hover { border-color: var(--accent); }
+
+  /* --- Menu panel --- */
+  #menu {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 9;
+    width: 200px;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    backdrop-filter: blur(6px);
+    transform: translateX(-110%);
+    opacity: 0;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+    pointer-events: none;
+  }
+  #menu.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #menu h2 {
+    margin: 0 0 12px 56px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #161a1f;
+    border: 1px solid var(--border);
+           s color: var(--text);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .lang-option:last-child { margin-bottom: 0; }
+  .lang-option:hover { border-color: var(--accent); }
+  .lang-option.active {
+    border-color: var(--accent);
+    background: #11202a;
+  }
+  .lang-option .flag { font-size: 16px; }
+  .lang-option .check {
+    margin-left: auto;
+    color: var(--accent);
+    visibility: hidden;
+  }
+  .lang-option.active .check { visibility: visible; }
+
+
 body {
   overflow: hidden;
   margin: 0;
@@ -139,14 +232,79 @@ id= padding: 2px 4px;
 </style>
 </head>
 <body>
+  <button id="menu-toggle" title="Toggle menu">☰</button>
 
+  <div id="menu">
+    <h2>Language</h2>
+
+    <button class="lang-option active" data-lang="en">
+      <span class="flag">🇬🇧</span>
+      <span>English</span>
+      <span class="check">✓</span>
+    </button>
+    
+    
+    <button class="lang-option" data-lang="pl">
+      <span class="flag">🇵🇱</span>
+      <span>Polski</span>
+      <span class="check">✓</span>
+    </button>
+    
+
+    <button class="lang-option" data-lang="fr">
+      <span class="flag">🇫🇷</span>
+      <span>Français</span>
+      <span class="check">✓</span>
+    </button>
+
+    
+    <button class="lang-option" data-lang="es">
+      <span class="flag">🇪🇸</span>
+      <span>Español</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="it">
+      <span class="flag">🇮🇹</span>
+      <span>Italiano</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="sr">
+      <span class="flag">🇷🇸</span>
+      <span>Srpski</span>
+      <span class="check">✓</span>
+    </button>  
+    
+       <button class="lang-option" data-lang="hi">
+      <span class="flag">🇮🇳</span>
+      <span>हिन्दी</span>
+      <span class="check">✓</span> 
+    </button>
+
+    <button class="lang-option" data-lang="uk">
+      <span class="flag">🇺🇦</span>
+      <span>Українська</span>
+      <span class="check">✓</span>
+    </button>
+
+    <button class="lang-option" data-lang="de">
+      <span class="flag">🇩🇪</span>
+      <span>Deutsch</span>
+      <span class="check">✓</span>
+    </button>
+
+    
+  </div>
+
+   
 <!--	<script src="../../three-js/examples/js/vr/HelioWebXRPolyfill.js"></script> --> 
 
 <script src="Guess-the-Knot.js" type="module"></script>
 <div id="container"> 
   <!-- Three.js will inject the canvas here -->
   
-  <div class="banner"> Guess the Knot! <br>
+  <div class="banner" id="gtk_banner">Guess the Knot!<br>  <!--  Odgadnij węzeł -->
     <small>
     <div id="subTitle">version</div>
     </small> <br>
@@ -162,7 +320,7 @@ id= padding: 2px 4px;
     <button id="findout" class="findout-button">Find Out!</button>
   </div>
   <div id="menu-layer">
-    <button class="overlay-menu-item" onclick="window.location.href='./flypmoth/index.html';">flypmoth</button>
+    <button id="flypmoth" class="overlay-menu-item" onclick="window.location.href='./flypmoth/index.html';">flypmoth</button>
     <br>
     <button class="overlay-menu-item" onclick="window.location.href='./index.html';">Guess the Knot!</button>
     <br>
@@ -191,4 +349,4 @@ id= padding: 2px 4px;
   <div> </div>
 </div>
 </body>
-</html>
+</html>  

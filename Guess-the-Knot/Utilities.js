@@ -63,6 +63,7 @@ Utilities.load = async function (filename, callback) {
 }
 
 Utilities.loadCSV = async function (filename, callback) {
+  console.log ('loading ' + filename);
   const loader = new FileLoader ();
   const contents = await loader.loadAsync (filename);
   //console.log (contents);

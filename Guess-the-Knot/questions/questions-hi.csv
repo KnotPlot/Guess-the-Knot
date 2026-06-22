@@ -1,0 +1,30 @@
+name,info
+monster,इनमें से एक अननॉट (तथाकथित "मॉन्स्टर") है|दूसरा ट्रेफ़ॉयल है (क्या आप बता सकते हैं कि कौन सा क्या है?)
+unknown,One of these is the knot 6.2.|The other is the unknot (can you tell which is which?)
+compact,Which of these is actually knotted?|(the other is an unknot)
+perkopair,Are these two knots the same or different?
+squaregranny,The Square Knot and the Granny
+monster1,Left hand side of the monster
+monster2,Right hand side of the monster
+unknown1,Left hand side of unknown
+unknown2,Right hand side of unknown
+compact1,Left hand side of the compact
+compact2,Right hand side of the compact
+perkoa,PerkoA knot
+perkob,PerkoB knot
+squareknot,Square Knot
+grannyknot,Granny Knot
+brunnian3,3-component Brunnian link (compare to BrunnianRings)
+brunnian4,4-component Brunnian link
+brunnian6,6-component Brunnian link
+mosaic1,The knot +3.1 as a mosaic
+mosaic2,The knot -3.1 as a mosaic
+mosaic3,The knot 8.18 as a mosaic
+lorenzlink,Lorenz link with words (xxy yyyx xyxyx)
+ravenna,Labyrinth in the church of St. Vitale in Ravenna Italy
+carrickbend,Carrick Bend (a popular knot for sailors)
+borromeanrings,The Borromean Rings (compare to Brunnian3)
+endlessknot,The Endless Knot
+milnor,Milnors Link
+test1,A test of PL and smooth mode together|Also different colours and tube thicknesses
+freedman,Can you tell if this is unknotted?

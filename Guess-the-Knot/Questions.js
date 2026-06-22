@@ -7,7 +7,7 @@ import {
 
 
 var Questions = function () {}   
-
+  
 var question;
 var developer = false;   
 
@@ -20,16 +20,20 @@ var questionsAvailableCallback;
 
 function addQuestions (csv) {
   for (var c = 0; c < csv.length; c++) {
-    //console.log (c + " " + csv [c][0] + " zoik " + csv [c][1]);
     question.set (csv [c][0], csv [c][1]);
   }
   questionsAvailableCallback ();
 }
 
-Questions.load = function (callback) {
+Questions.load = function (callback, language) {
+  console.log ('********* loading questions');
   question = new Map();
   questionsAvailableCallback = callback;
-  Utilities.loadCSV ('questions.csv', addQuestions);
+  let csvFile = 'questions/questions-' + language + '.csv';
+  //if (!csvFile.exists ())
+  //  csvFile = 'questions/questions-en.csv';
+  
+  Utilities.loadCSV (csvFile, addQuestions);
 }
 
 Questions.getQuestion = function (modelName) {

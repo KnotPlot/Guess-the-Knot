@@ -13,7 +13,7 @@ function doit ($com) {
   print "$com\n";
   system ($com);
 }
-
+  
 
 $date = date ("Ymd-H\hi\ms\sT");
 
